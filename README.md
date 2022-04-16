@@ -1,2 +1,3 @@
-# brain-cards
+# Brain Cards
  Upgrade your vocabulary using associative cards!
+ 
