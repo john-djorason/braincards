@@ -1,6 +1,14 @@
+#!usr/bin/env python3
 
-def start():
+import os
+import sys
+
+import associative_cards
+
+
+def main():
     print('Brain Cards')
 
 
-start()
+if __name__ == '__main__':
+    main()
