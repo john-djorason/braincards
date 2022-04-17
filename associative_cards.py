@@ -10,17 +10,17 @@ import enum
 
 class MemorizeStatuses(enum.Enum):
     """
-        A class to represent different types of a word memorizing process.
+    A class to represent different types of a word memorizing process.
 
-        Values
-        -------
-        Default - the word is new
-        Day - the word has correct match a day before
-        Week - the word has correct match a week before
-        Month - the word has correct match a month before
-        Year - the word has correct match a year before
-        BrainCarded - the word is successfully learned
-        """
+    Values
+    -------
+    Default - the word is new
+    Day - the word has correct match a day before
+    Week - the word has correct match a week before
+    Month - the word has correct match a month before
+    Year - the word has correct match a year before
+    BrainCarded - the word is successfully learned
+    """
 
     Default = 0
     Day = 1
