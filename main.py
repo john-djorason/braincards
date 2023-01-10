@@ -1,13 +1,10 @@
 #!usr/bin/env python3
 
-import os
-import sys
-
 import associative_cards
 
 
 def main():
-    print('Brain Cards')
+    print('BrainCards')
 
 
 if __name__ == '__main__':
