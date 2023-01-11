@@ -8,6 +8,7 @@ Version: 1.0
 import enum
 import configparser
 import json
+from datetime import datetime as dt
 
 
 class MemorizeStatuses(enum.Enum):
@@ -55,11 +56,8 @@ class CardBox:
 
     Methods
     -------
-    add_card(card : Card) : None
+    add_card(card : Card) : Bool
         Adds a card to the card-box
-
-    load_cards() : None
-        Reads the cards' data from the file to initiate a card-box
 
     save_cards() : None
         Saves the cards' data to the file
@@ -70,7 +68,7 @@ class CardBox:
 
     def __init__(self):
         self._settings = BrainSettings()
-        self.load_cards()
+        self._load_cards()
 
     def add_card(self, card):
         """
@@ -83,28 +81,29 @@ class CardBox:
 
         Returns
         -------
-        None
+        True - if the card is added, and False - there is a card with the same word
         """
 
-        if card not in self._cards:
-            self._cards.append(card)
+        if card in self._cards:
+            return False
 
-    def load_cards(self):
-        """
-        Reads the cards' data from the file to initiate a card-box
+        self._cards.append(card)
 
-        Returns
-        -------
-        None
-        """
+        return True
 
-        path = self._settings.cards_path()
-        with open(path, 'r', encoding='utf-8') as f:
-            lines = f.readlines()
-            for line in lines:
-                data = json.loads(line.replace('\n', ''))
-                card = Card(data.word, data.assosiation, data.translation, data.status)
-                self.add_card(card)
+    def get_cards_to_learn(self):
+        cards = []
+        for card in self._cards:
+            if card.status in (MemorizeStatuses.Default, MemorizeStatuses.Day):
+                cards.append(card)
+            elif card.status == MemorizeStatuses.Week and dt.now().weekday() == 1:
+                cards.append(card)
+            elif card.status == MemorizeStatuses.Month and dt.now().day == 1:
+                cards.append(card)
+            elif card.status == MemorizeStatuses.Year and dt.now().month == 1 and dt.now().day == 1:
+                cards.append(card)
+
+        return cards
 
     def save_cards(self):
         """
@@ -120,12 +119,29 @@ class CardBox:
             for card in self._cards:
                 data = {
                     'word': card.word,
-                    'association': card.association,
                     'translation': card.translation,
+                    'association': card.association,
                     'status': card.status.value
                 }
                 line = json.dumps(data) + '\n'
                 f.write(line)
+
+    def _load_cards(self):
+        """
+        Reads the cards' data from the file to initiate a card-box
+
+        Returns
+        -------
+        None
+        """
+
+        path = self._settings.cards_path()
+        with open(path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+            for line in lines:
+                data = json.loads(line.replace('\n', ''))
+                card = Card(data['word'], data['translation'], data['association'], data['status'])
+                self.add_card(card)
 
 
 class Card:
