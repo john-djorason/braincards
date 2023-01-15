@@ -8,6 +8,7 @@ Version: 1.0
 import enum
 import configparser
 import json
+import random
 from datetime import datetime as dt
 
 
@@ -56,11 +57,14 @@ class CardBox:
 
     Methods
     -------
-    add_card(card : Card) : Bool
+    add_card(card : Card) : bool
         Adds a card to the card-box
 
+    learn_cards() : list
+        Returns the cards to learn
+
     save_cards() : None
-        Saves the cards' data to the file
+        Saves the cards' data in to the file
     """
 
     _settings = None
@@ -88,10 +92,11 @@ class CardBox:
             return False
 
         self._cards.append(card)
+        self.save_cards()
 
         return True
 
-    def get_cards_to_learn(self):
+    def learn_cards(self):
         cards = []
         for card in self._cards:
             if card.status in (MemorizeStatuses.Default, MemorizeStatuses.Day):
@@ -102,6 +107,8 @@ class CardBox:
                 cards.append(card)
             elif card.status == MemorizeStatuses.Year and dt.now().month == 1 and dt.now().day == 1:
                 cards.append(card)
+
+        random.shuffle(cards)
 
         return cards
 
@@ -171,8 +178,8 @@ class Card:
     get_tails() : str
         Returns a back side of the card
 
-    check_word(word : str) : None
-        Updates the status of the word memorizing process
+    check_word(word : str) : bool
+        Updates the status of the word memorizing process and returns the correctness
 
     Example
     -------
@@ -187,13 +194,28 @@ class Card:
     _status = None
 
     def __init__(self, word, translation, association, status=0):
-        self.word = word
-        self.translation = translation
-        self.association = association
+        new_word = word.strip().lower()
+        new_translation = translation.strip().lower()
+        new_association = association.strip().lower()
+
+        if not new_word or not new_translation or not new_association:
+            return
+        if new_word not in new_association:
+            return
+
+        self.word = new_word
+        self.translation = new_translation
+        self.association = new_association
         self.status = status
 
     def __eq__(self, other):
         return self.word == other.word
+
+    def __bool__(self):
+        if self.word:
+            return True
+        else:
+            return False
 
     @property
     def word(self):
@@ -263,11 +285,13 @@ class Card:
 
         Returns
         -------
-        None
+        True - if the word suggestion is correct, False - otherwise
         """
 
         correct = self.word == word
         self._update_status(correct)
+
+        return correct
 
     def _update_status(self, success):
         iterator = 1 if success else -1

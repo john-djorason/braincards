@@ -14,14 +14,14 @@ def start():
     box = CardBox()
 
     def learn():
-        cards = box.get_cards_to_learn()
-        if cards:
-            card = cards[0]
-            messagebox.showinfo(card.word, card.translation)
-
-    def finish():
+        cards = box.learn_cards()
+        ind = 0
+        str_count = str(len(cards))
+        for card in cards:
+            ind += 1
+            title = str(ind) + '/' + str_count
+            show_card(card, title)
         box.save_cards()
-        window.destroy()
 
     def add_card():
         add_window = Tk()
@@ -55,6 +55,9 @@ def start():
             association = association_value.get()
 
             new_card = Card(word=word, translation=translation, association=association)
+            if not new_card:
+                messagebox.showinfo('Ошибка', 'Не удалось создать карточку!')
+                return
             if not box.add_card(new_card):
                 messagebox.showinfo('Повтор', 'Карточка с таким словом уже существует!')
                 return
@@ -70,7 +73,37 @@ def start():
 
         add_window.mainloop()
 
-    window.protocol("WM_DELETE_WINDOW", finish)
+    def show_card(card, title):
+        card_window = Tk()
+        card_window.title("Карточка " + title)
+        card_window.geometry('320x100')
+
+        word_lbl = Label(card_window, text='Слово:')
+        word_lbl.grid(column=0, row=0, sticky=W, padx=5, pady=5)
+
+        word_value = Entry(card_window, width=40)
+        word_value.insert(0, card.get_heads())
+        word_value.grid(column=1, row=0, sticky=W, pady=5)
+
+        translation_lbl = Label(card_window, text="Перевод:")
+        translation_lbl.grid(column=0, row=1, sticky=W, padx=5, pady=5)
+
+        translation_value = Entry(card_window, width=40)
+        translation_value.insert(0, '')
+        translation_value.grid(column=1, row=1, sticky=W)
+
+        def check_card():
+            translation = translation_value.get()
+            if not card.check_word(translation):
+                messagebox.showinfo('Ассоциация', card.get_tails())
+            card_window.destroy()
+            card_window.quit()
+
+        save_btn = Button(card_window, text='Проверить', command=check_card)
+        save_btn.grid(column=0, row=2, columnspan=2, padx=20, pady=5)
+
+        card_window.mainloop()
+
     window.title("BrainCards")
     window.geometry('250x105')
 
@@ -87,4 +120,3 @@ def start():
 
 if __name__ == '__main__':
     main()
-
