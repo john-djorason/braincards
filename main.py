@@ -62,8 +62,6 @@ def start():
                 messagebox.showinfo('Повтор', 'Карточка с таким словом уже существует!')
                 return
 
-            messagebox.showinfo('Готово', 'Карточка успешно добавлена!')
-
             word_value.delete(0, END)
             translation_value.delete(0, END)
             association_value.delete(0, END)

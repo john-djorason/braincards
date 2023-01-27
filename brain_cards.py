@@ -101,11 +101,11 @@ class CardBox:
         for card in self._cards:
             if card.status in (MemorizeStatuses.Default, MemorizeStatuses.Day):
                 cards.append(card)
-            elif card.status == MemorizeStatuses.Week and dt.now().weekday() == 1:
+            elif card.status == MemorizeStatuses.Week and dt.now().weekday() <= 2:
                 cards.append(card)
-            elif card.status == MemorizeStatuses.Month and dt.now().day == 1:
+            elif card.status == MemorizeStatuses.Month and dt.now().day <= 2:
                 cards.append(card)
-            elif card.status == MemorizeStatuses.Year and dt.now().month == 1 and dt.now().day == 1:
+            elif card.status == MemorizeStatuses.Year and dt.now().month == 1 and dt.now().day <= 2:
                 cards.append(card)
 
         random.shuffle(cards)
@@ -209,10 +209,10 @@ class Card:
         self.status = status
 
     def __eq__(self, other):
-        return self.word == other.word
+        return self.word == other.word or self.translation == other.translation
 
     def __bool__(self):
-        if self.word:
+        if self.word and self.translation:
             return True
         else:
             return False
