@@ -183,9 +183,9 @@ class Card:
 
     Example
     -------
-        'ИМБИРЬ'
+        'ZÁZVOR'
         ===============================================>
-        'Заказывая суши, я никогда не ем красный GINGER'
+        'I don't eat pink-coloured ZÁZVOR with sushi'
     """
 
     _word = ''
