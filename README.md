@@ -1,2 +1,2 @@
-# braincards
-Training you vocabulary
+# Brain Cards
+ Upgrade your vocabulary using associative cards!
